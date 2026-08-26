@@ -19,16 +19,19 @@
 
 ## 0. TL;DR — 一张图看懂
 
-```
-1997 Trident(IE) ───────────────────────────────┐
-1998 Gecko ─────────────────────────────────────┤
-2001 WebKit(KHTML 衍生) ────────────────────────┤
-2008 Chromium(早期 WebKit+V8) ──────────────────┤
-2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
-2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
-2015 EdgeHTML(旧 Edge) ─────────────────────────┤
-2020 新 Edge → Chromium ────────────────────────┤
-2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
+```mermaid
+timeline
+    title 浏览器引擎血缘与生命周期
+    1997 : Trident (IE)
+    1998 : Gecko (Mozilla)
+    2001 : WebKit ← KHTML 衍生
+    2008 : Chromium 早期用 WebKit+V8
+    2012 : Servo (Rust 探索)
+    2013 : ★ Blink 从 WebKit 分支
+    2015 : EdgeHTML (旧 Edge)
+    2020 : 新 Edge → 转投 Chromium
+    2021 : EdgeHTML 终止 (03-09)
+    2026 : 现役仅 3 套 : Chromium · Gecko · WebKit
 ```
 
 **核心结论**：可用于新产品的内核**只有三套**——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。">
@@ -42,16 +45,19 @@
 
 ## 0. TL;DR — 一张图看懂
 
-```
-1997 Trident(IE) ───────────────────────────────┐
-1998 Gecko ─────────────────────────────────────┤
-2001 WebKit(KHTML 衍生) ────────────────────────┤
-2008 Chromium(早期 WebKit+V8) ──────────────────┤
-2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
-2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
-2015 EdgeHTML(旧 Edge) ─────────────────────────┤
-2020 新 Edge → Chromium ────────────────────────┤
-2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
+```mermaid
+timeline
+    title 浏览器引擎血缘与生命周期
+    1997 : Trident (IE)
+    1998 : Gecko (Mozilla)
+    2001 : WebKit ← KHTML 衍生
+    2008 : Chromium 早期用 WebKit+V8
+    2012 : Servo (Rust 探索)
+    2013 : ★ Blink 从 WebKit 分支
+    2015 : EdgeHTML (旧 Edge)
+    2020 : 新 Edge → 转投 Chromium
+    2021 : EdgeHTML 终止 (03-09)
+    2026 : 现役仅 3 套 : Chromium · Gecko · WebKit
 ```
 
 **核心结论**：可用于新产品的内核**只有三套**——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。">
@@ -132,17 +138,34 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </blockquote>
 <hr>
 <h2>0. TL;DR — 一张图看懂</h2>
-<pre class="notranslate"><code class="notranslate">1997 Trident(IE) ───────────────────────────────┐
-1998 Gecko ─────────────────────────────────────┤
-2001 WebKit(KHTML 衍生) ────────────────────────┤
-2008 Chromium(早期 WebKit+V8) ──────────────────┤
-2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
-2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
-2015 EdgeHTML(旧 Edge) ─────────────────────────┤
-2020 新 Edge → Chromium ────────────────────────┤
-2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
-</code></pre>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">timeline</span>
+    <span class="pl-k">title</span> <span class="pl-s">浏览器引擎血缘与生命周期</span>
+    <span class="pl-ent">1997 </span><span class="pl-k">:</span> <span class="pl-en">Trident (IE)</span>
+    <span class="pl-ent">1998 </span><span class="pl-k">:</span> <span class="pl-en">Gecko (Mozilla)</span>
+    <span class="pl-ent">2001 </span><span class="pl-k">:</span> <span class="pl-en">WebKit ← KHTML 衍生</span>
+    <span class="pl-ent">2008 </span><span class="pl-k">:</span> <span class="pl-en">Chromium 早期用 WebKit+V8</span>
+    <span class="pl-ent">2012 </span><span class="pl-k">:</span> <span class="pl-en">Servo (Rust 探索)</span>
+    <span class="pl-ent">2013 </span><span class="pl-k">:</span> <span class="pl-en">★ Blink 从 WebKit 分支</span>
+    <span class="pl-ent">2015 </span><span class="pl-k">:</span> <span class="pl-en">EdgeHTML (旧 Edge)</span>
+    <span class="pl-ent">2020 </span><span class="pl-k">:</span> <span class="pl-en">新 Edge → 转投 Chromium</span>
+    <span class="pl-ent">2021 </span><span class="pl-k">:</span> <span class="pl-en">EdgeHTML 终止 (03-09)</span>
+    <span class="pl-ent">2026 </span><span class="pl-k">:</span> <span class="pl-en">现役仅 3 套 </span><span class="pl-k">:</span> <span class="pl-en">Chromium · Gecko · WebKit</span></pre></div>
 <p><strong>核心结论</strong>：可用于新产品的内核<strong>只有三套</strong>——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">KHTML</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>KHTML (KDE)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">WebKit</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>WebKit (2001)&lt;<span class="pl-ent">br</span>/&gt;WebCore + JSC<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">WebKit</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">Blink</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Blink (2013 分支)&lt;<span class="pl-ent">br</span>/&gt;+ V8 = Chromium<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Servo</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Servo (Rust)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">Stylo / WebRender&lt;br/&gt;成果回流</span><span class="pl-k">|</span> <span class="pl-ent">Gecko</span>
+    <span class="pl-ent">Gecko</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Gecko + SpiderMonkey&lt;<span class="pl-ent">br</span>/&gt;(Mozilla, 1998)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Trident</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Trident + Chakra&lt;<span class="pl-ent">br</span>/&gt;(IE, 1997)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">仅 IE 模式</span><span class="pl-k">|</span> <span class="pl-ent">Legacy</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>遗留兼容<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">EdgeHTML</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>EdgeHTML (2015)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">2021 终止</span><span class="pl-k">|</span> <span class="pl-ent">Dead</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>停止维护<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">Blink</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#4285f4</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">Gecko</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#ff9500</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">WebKit</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#34a853</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">Dead</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#999</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">Legacy</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#999</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span></pre></div>
+<blockquote>
+<p>上图要点：<strong>Blink 源自 WebKit，而非 EdgeHTML</strong>；Servo 的成果回流进 Gecko，并未替换它；两条红色虚线代表已退出历史舞台。</p>
+</blockquote>
 <hr>
 <h2>1. 概念澄清（最容易踩坑）</h2>
 <p>这五个名字<strong>层级不同</strong>，不能直接并列：</p>
@@ -208,22 +231,44 @@ Gecko     = layout/style 子系统 + SpiderMonkey
 <p><strong>优势 = 兼容面 + 进程隔离 + DevTools + WebView 生态的组合</strong>，而非单点渲染速度。</p>
 <ul>
 <li><strong>渲染管线</strong>：<code class="notranslate">HTML→DOM→样式→布局→Paint→Raster→GPU合成</code>，高度并行；现代 Chromium 把 Blink/V8 放进<strong>沙箱渲染进程</strong>，独立 GPU 进程、Browser 进程持高权限；<strong>站点隔离</strong>按 site 拆分渲染进程。</li>
-<li><strong>V8 分层 JIT</strong>：<code class="notranslate">Ignition → Sparkplug → Maglev → TurboFan</code>，冷启动与长时热代码收益不同。</li>
+<li><strong>V8 分层 JIT</strong>：<code class="notranslate">Ignition(解释器) → Sparkplug(快速JIT) → Maglev(中层JIT) → TurboFan(优化JIT)</code>，冷启动与长时热代码走不同路径。（分层随 V8 版本演进，以官方设计文档为准）</li>
 <li><strong>代价</strong>：多进程 ⇒ 更高常驻内存、IPC、初始化开销；<strong>主线程长任务仍是瓶颈</strong>（同步 JS、强制回流、大批量 DOM）。</li>
 <li><strong>生态</strong>：Chrome/Edge/Opera/Vivaldi/Brave、Electron、WebView2、CEF、Android System WebView 共享其兼容面。</li>
 <li><strong><g-emoji class="g-emoji" alias="warning">⚠️</g-emoji> iOS 硬约束</strong>：第三方浏览器<strong>必须用 WebKit</strong>，"一套 Chromium 打天下"在 iOS 不成立。</li>
 </ul>
+<p><strong>Chromium 多进程架构</strong>（沙箱的核心）：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">TB</span>
+    <span class="pl-ent">Browser</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Browser 进程&lt;<span class="pl-ent">br</span>/&gt;(UI / 权限 / 磁盘, 高权限)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">GPU</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>GPU 进程&lt;<span class="pl-ent">br</span>/&gt;(图形命令, 受限)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Net</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Network 服务<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Renderer 进程&lt;<span class="pl-ent">br</span>/&gt;site=A.com (沙箱)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Renderer 进程&lt;<span class="pl-ent">br</span>/&gt;site=B.com (沙箱)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Renderer 进程&lt;<span class="pl-ent">br</span>/&gt;Web Worker / Utility<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Browser</span> <span class="pl-k">---</span> <span class="pl-ent">GPU</span>
+    <span class="pl-ent">Browser</span> <span class="pl-k">---</span> <span class="pl-ent">Net</span>
+    <span class="pl-ent">Browser</span> <span class="pl-k">---</span> <span class="pl-ent">R1</span>
+    <span class="pl-ent">Browser</span> <span class="pl-k">---</span> <span class="pl-ent">R2</span>
+    <span class="pl-ent">Browser</span> <span class="pl-k">---</span> <span class="pl-ent">R3</span>
+    <span class="pl-ent">R1</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">IPC</span><span class="pl-k">|</span> <span class="pl-ent">Browser</span>
+    <span class="pl-ent">R2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">IPC</span><span class="pl-k">|</span> <span class="pl-ent">Browser</span>
+    <span class="pl-k">style</span> <span class="pl-ent">Browser</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#4285f4</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">R1</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#e8f0fe</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">R2</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#e8f0fe</span></span>
+    <span class="pl-k">style</span> <span class="pl-ent">R3</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#e8f0fe</span></span></pre></div>
+<blockquote>
+<p><strong>Site Isolation</strong>：不同 site 的页面分到不同 Renderer 进程，即使 iframe 嵌套也隔离，是防 Spectre 类侧信道的关键。这也是"多进程 ≠ 隔离"的区别所在。</p>
+</blockquote>
 <h3>2.2 Gecko（+Servo 回流）</h3>
 <p><strong>唯一长期独立于 Chromium/WebKit 的主流桌面引擎，价值在多样性、隐私、可修改性。</strong></p>
 <ul>
-<li>渲染路径：<code class="notranslate">HTML/DOM → frame tree → 位置计算 → 跨平台绘制</code>；旧 Layers 架构已移除，<strong>WebRender</strong> 走 GPU 化 display list（scene building → frame building → GPU 命令）。</li>
-<li><strong>结论</strong>："Gecko 一定 CPU 重"已过时，瓶颈转移到 display list/GPU 后端。</li>
+<li>渲染路径：<code class="notranslate">HTML/DOM → frame tree → 样式/布局 → display list → 合成/绘制</code>。旧 Layers 架构已移除，<strong>WebRender</strong> 走 GPU 化 display list（scene building → frame building → GPU 命令）。</li>
+<li><strong>结论</strong>："Gecko 一定 CPU 重"已过时，实际瓶颈取决于样式复杂度、display list 与 GPU 后端。</li>
 <li><strong>License</strong>：MPL 2.0（允许与专有代码组合，但对修改文件有义务）。</li>
 <li><strong>代价</strong>：Web 兼容差异、扩展生态、硬件集成需自建平台团队。</li>
 <li><strong>Servo/Ladybird</strong>：仅作技术跟踪，<strong>不可写入"已可用引擎矩阵"</strong>。</li>
 </ul>
 <h3>2.3 EdgeHTML</h3>
-<p><strong>被 Chromium 替换的旧 Edge 引擎，不是 Blink 的前身。</strong> 2015-07-28 发布，随 Legacy Edge/UWP WebView 使用；<strong>2021-03-09 支持终止</strong>。2026 年新项目<strong>不应列入支持矩阵</strong>，仅保留迁移盘点与回归测试价值。</p>
+<p><strong>被 Chromium 替换的旧 Edge 引擎，不是 Blink 的前身。</strong> 随 Windows 10 首发（2015-07-29）的 Legacy Edge/UWP WebView 引入；<strong>2021-03-09 支持终止</strong>。2026 年新项目<strong>不应列入支持矩阵</strong>，仅保留迁移盘点与回归测试价值。</p>
 <h3>2.4 Trident / MSHTML + Chakra/JScript</h3>
 <p><strong>IE 模式兼容引擎，不是现代 Web 基线。</strong> 适配成本极高：ES5 边界、旧 JScript、<code class="notranslate">attachEvent</code>、<code class="notranslate">currentStyle</code>、ActiveX、VBScript、条件注释、X-UA-Compatible、NTLM/Intranet 隐式依赖。</p>
 <p><strong>迁移顺序</strong>：① 去 ActiveX/插件硬依赖 → ② 业务逻辑迁标准 API → ③ WebView2 承载 → ④ 功能开关逐步关 IE 模式 → <strong>⑤ 设明确退出日期</strong>。</p>
@@ -232,7 +277,7 @@ Gecko     = layout/style 子系统 + SpiderMonkey
 <ul>
 <li><code class="notranslate">WebCore</code>(HTML/XML/CSS/SVG/MathML/Web API) + <code class="notranslate">JavaScriptCore</code>(ECMA-262)。</li>
 <li><strong>进程模型</strong>：WebKit1 单进程 / <strong>WebKit2 多进程</strong>(UI + WebContent + Networking)，承载 WKWebView。</li>
-<li><strong>JSC 分层 JIT</strong>：<code class="notranslate">LLInt → Baseline(≥6次调用) → DFG(≥60次) → FTL(数千次)</code>——这是<strong>触发阈值，非性能承诺</strong>。</li>
+<li><strong>JSC 分层 JIT</strong>：<code class="notranslate">LLInt → Baseline → DFG → FTL</code>，逐层升温；阈值随版本演进且因函数形态而异，<strong>切勿当作跨版本固定的规范承诺</strong>。</li>
 <li><strong>强项</strong>：Metal/Core Animation/Power Management 深度协同 ⇒ Apple 平台能耗优势。</li>
 <li><strong>短板</strong>：非 Apple 平台的图形栈、媒体能力、后端成熟度<strong>不可等同 Safari</strong>，须按 <code class="notranslate">(WebEngine版本, OS, 设备)</code> 三元组实测。</li>
 </ul>
@@ -252,14 +297,14 @@ Gecko     = layout/style 子系统 + SpiderMonkey
 <tr>
 <td><strong>Chromium</strong></td>
 <td>Blink / V8</td>
-<td>Browser+Renderer(沙箱)+GPU+Net；站点隔离</td>
+<td>Browser+Renderer(沙箱)+GPU+Net；Site Isolation 按 site 分进程</td>
 <td>BSD-style</td>
 <td>现役首选兼容面；承担内存/更新/供应链责任</td>
 </tr>
 <tr>
 <td><strong>Gecko</strong></td>
 <td>Gecko layout/style / SpiderMonkey(+Stylo/WebRender)</td>
-<td>内容+GPU+网络；OMTC 线程化</td>
+<td>内容/GPU/网络多进程 + 合成线程化(OMTC)</td>
 <td>MPL 2.0</td>
 <td>多样性/隐私/可修改性；需平台适配</td>
 </tr>
@@ -339,6 +384,12 @@ Gecko     = layout/style 子系统 + SpiderMonkey
 </table></markdown-accessiblity-table>
 <h3>4.2 桌面份额 ≠ 内核能力排名</h3>
 <p>StatCounter 2026-07 桌面快照：Chrome <strong>70.58%</strong> + Edge <strong>11.15%</strong>（<strong>二者均 Chromium，绝不能相加称"Chromium份额"</strong>）+ Firefox 6.51% + Safari 5.66%。</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">pie</span> <span class="pl-k">title</span> <span class="pl-s">桌面浏览器份额 (StatCounter 2026-07)</span>
+    <span class="pl-s">"Chrome (Chromium)<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-c1">70.58</span>
+    <span class="pl-s">"Edge (Chromium)<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-c1">11.15</span>
+    <span class="pl-s">"Firefox (Gecko)<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-c1">6.51</span>
+    <span class="pl-s">"Safari (WebKit)<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-c1">5.66</span>
+    <span class="pl-s">"其他<span class="pl-pds">"</span></span> <span class="pl-k">:</span> <span class="pl-c1">6.10</span></pre></div>
 <p>✅ 正确用法：<strong>定测试优先级</strong>。❌ 错误推导："份额高 ⇒ 所有负载最快 ⇒ 无需测 Gecko/WebKit"。</p>
 <h3>4.3 基准必须固定实验协议</h3>
 <p>Speedometer 3 测 <em>responsiveness</em>（几何均值）。正确流程：</p>
@@ -416,16 +467,25 @@ Gecko     = layout/style 子系统 + SpiderMonkey
 <hr>
 <h2>7. 选型决策树与最小测试矩阵</h2>
 <h3>7.1 决策树（先问约束，再问引擎）</h3>
-<pre class="notranslate"><code class="notranslate">Q1 iOS 分发要求？ ──是──▶ WKWebView/WebKit（不可绕过），其余平台也建 WebKit 测试
- │否
-Q2 有 Trident/ActiveX 或 EdgeHTML UWP 死依赖？ ──是──▶ 企业迁移路径（设退出日）
- │否 → 二者移出新矩阵
-Q3 强系统集成/低功耗/Apple 体验？ ──是──▶ 优先 WebKit
-Q4 快速覆盖大量 Web/扩展/媒体/WebGPU/Windows？ ──是──▶ Chromium（担内存+更新成本）
-Q5 强隐私/独立标准参考/需改引擎？ ──是──▶ Gecko 正式候选（嵌入式再加比 WPE/CEF）
- │
- ▼ 必经：真实 WebView + 真实设备 + 真实业务页验证 —— 否则不锁定选型
-</code></pre>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">TD</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>选定型目标<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">Q1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>iOS 分发？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q1</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">R1</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>WKWebView / WebKit&lt;<span class="pl-ent">br</span>/&gt;(不可绕过)&lt;<span class="pl-ent">br</span>/&gt;其余平台也建 WebKit 测试<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q1</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">Q2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>有 Trident/ActiveX&lt;<span class="pl-ent">br</span>/&gt;或 EdgeHTML UWP 死依赖？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">R2</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>企业迁移路径&lt;<span class="pl-ent">br</span>/&gt;设明确退出日期<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q2</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">Q3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>强系统集成 /&lt;<span class="pl-ent">br</span>/&gt;低功耗 / Apple 体验？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q3</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">R3</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>优先 WebKit<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q3</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">Q4</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>要广覆盖 Web /&lt;<span class="pl-ent">br</span>/&gt;扩展 / 媒体 / WebGPU / Windows？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q4</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">R4</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Chromium&lt;<span class="pl-ent">br</span>/&gt;(承担内存 + 更新成本)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q4</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">Q5</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">{</span></span><span class="pl-s"><span class="pl-pds">"</span>强隐私 / 独立标准参考&lt;<span class="pl-ent">br</span>/&gt;/ 需改引擎？<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">}</span></span></span>
+    <span class="pl-ent">Q5</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">是</span><span class="pl-k">|</span> <span class="pl-ent">R5</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>Gecko 正式候选&lt;<span class="pl-ent">br</span>/&gt;(嵌入式再加比 WPE/CEF)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">Q5</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">否</span><span class="pl-k">|</span> <span class="pl-ent">R6</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>按具体平台约束&lt;<span class="pl-ent">br</span>/&gt;单独评估<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R1</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>必经终检：&lt;<span class="pl-ent">br</span>/&gt;真实 WebView + 真实设备 + 真实业务页<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">R2</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span>
+    <span class="pl-ent">R3</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span>
+    <span class="pl-ent">R4</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span>
+    <span class="pl-ent">R5</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span>
+    <span class="pl-ent">R6</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">V</span>
+    <span class="pl-k">style</span> <span class="pl-ent">V</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#f44336</span></span><span class="pl-sg">,</span><span class="pl-s1"><span class="pl-c1"><span class="pl-c1">color</span></span>:<span class="pl-c1">#fff</span></span></pre></div>
 <h3>7.2 最小测试矩阵</h3>
 <markdown-accessiblity-table><table role="table">
 <thead>
@@ -543,6 +603,76 @@ Gecko:   about:logging   # 布局/网络/存储诊断
 <ul>
 <li><strong>Servo / Ladybird</strong>：证明 Rust + 并行 + GPU 合成路线可行，但量产选型前须验 <strong>安全响应 / WPT / 媒体DRM / GPU后端 / WebDriver / 嵌入式ABI / LTS</strong>。</li>
 <li><strong>AI × 隐私</strong>：竞争焦点从"渲染速度"转向"代理能力 / 端侧模型 / 数据边界"。WebNN/WebGPU、AI Agent、权限提示、存储分区、跟踪防护、身份凭证都在放大<strong>引擎↔OS 耦合</strong>。架构上视 AI 能力为 <code class="notranslate">模型运行时 + 权限模型 + 页面能力</code> 的组合问题。</li>
+</ul>
+<hr>
+<h2>10. 科普专栏（读懂内核必备）</h2>
+<h3>10.1 从敲下网址到看到像素，内核做了什么？</h3>
+<p>浏览器内核不是"一块黑箱"，而是<strong>一条流水线</strong>。简化如下：</p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">flowchart</span> <span class="pl-c1">LR</span>
+    <span class="pl-ent">A</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>URL / HTML<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span> <span class="pl-k">--&gt;</span> <span class="pl-ent">B</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>网络&lt;<span class="pl-ent">br</span>/&gt;下载字节<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">B</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">C</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>解析&lt;<span class="pl-ent">br</span>/&gt;HTML→DOM&lt;<span class="pl-ent">br</span>/&gt;CSS→CSSOM<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">D</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>样式 + 布局&lt;<span class="pl-ent">br</span>/&gt;(计算样式 / 几何位置)<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">D</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">E</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>绘制 Paint&lt;<span class="pl-ent">br</span>/&gt;生成绘制指令<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">E</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">F</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>光栅化 Raster&lt;<span class="pl-ent">br</span>/&gt;像素填充<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">F</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">G</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>合成 Composite&lt;<span class="pl-ent">br</span>/&gt;图层 → GPU<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">G</span> <span class="pl-k">--&gt;</span> <span class="pl-ent">H</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>屏幕像素<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">C</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">JS 执行</span><span class="pl-k">|</span> <span class="pl-ent">I</span><span class="pl-s"><span class="pl-pds"><span class="pl-sg">[</span></span><span class="pl-s"><span class="pl-pds">"</span>JS 引擎&lt;<span class="pl-ent">br</span>/&gt;V8 / JSC / SM<span class="pl-pds">"</span></span><span class="pl-pds"><span class="pl-sg">]</span></span></span>
+    <span class="pl-ent">I</span> <span class="pl-k">--&gt;</span><span class="pl-k">|</span><span class="pl-s">修改 DOM/样式</span><span class="pl-k">|</span> <span class="pl-ent">D</span>
+    <span class="pl-k">style</span> <span class="pl-ent">I</span> <span class="pl-s1"><span class="pl-c1"><span class="pl-c1">fill</span></span>:<span class="pl-c1">#fbbc04</span></span></pre></div>
+<p>每一步都可能是瓶颈：<strong>网络慢</strong>看 TTFB，<strong>JS 长任务</strong>卡主线程（INP），<strong>频繁改样式</strong>触发强制回流（Layout Thrashing），<strong>图层过多</strong>压垮 GPU 内存。<strong>优化永远先测再改</strong>——这正是第 8.2 节诊断套路的价值。</p>
+<h3>10.2 "引擎"到底指哪一层？</h3>
+<p>一个常见误解是把浏览器等同于"渲染引擎"。实际上一次页面呈现至少涉及三层：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>层级</th>
+<th>职责</th>
+<th>Chromium</th>
+<th>Gecko</th>
+<th>WebKit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>JS 引擎</strong></td>
+<td>解析执行 JS / Wasm</td>
+<td>V8</td>
+<td>SpiderMonkey</td>
+<td>JavaScriptCore</td>
+</tr>
+<tr>
+<td><strong>渲染引擎</strong></td>
+<td>DOM/CSS/布局/绘制</td>
+<td>Blink</td>
+<td>Gecko layout</td>
+<td>WebCore</td>
+</tr>
+<tr>
+<td><strong>浏览器外壳</strong></td>
+<td>UI、网络、存储、沙箱、下载</td>
+<td>Chromium 基础设施</td>
+<td>Firefox 外壳</td>
+<td>Safari / WKWebView</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>WebKit = WebCore + JSC + 平台嵌入层</strong>，所以"WebKit 就是 Safari"是错的——iOS 上所有第三方浏览器都被迫用 WebKit，但它们各自有不同的外壳。反过来，<strong>Chromium 是完整项目</strong>（含外壳/网络/GPU/沙箱），Blink 才是对标 WebCore 的渲染引擎。这也是第 1 节反复强调"层级不同、不可并列"的原因。</p>
+<h3>10.3 为什么会有"标准"却仍有三大引擎？</h3>
+<p>Web 标准（HTML/CSS/ECMAScript/Web API）由 <strong>W3C / WHATWG / ECMA</strong> 制定，但<strong>标准只规定"该做什么"，不规定"怎么实现"</strong>。三家引擎各自写代码，再通过 <strong>WPT (Web Platform Tests)</strong> 这套跨引擎一致性测试基准对齐行为。</p>
+<p>这带来两个关键认知：</p>
+<ul>
+<li><strong>三大引擎并存的价值 = 实现多样性</strong>：若只剩一家，Web 标准实质上会被单一实现"绑架"（所谓 "Embrace, Extend, Extinguish" 的历史教训）。Gecko 与 WebKit 是 Chromium 之外的<strong>独立验证锚点</strong>。</li>
+<li><strong>兼容不等于完全相同</strong>：哪怕都"支持某 API"，在精度、性能、bug、flag、GPU 后端上仍有差异——所以第 4.4 节强调必须按 <code class="notranslate">特性 × 版本 × flag × 宿主</code> 实测。</li>
+</ul>
+<h3>10.4 为什么 iOS 强制用 WebKit？（科普 Apple 的考量）</h3>
+<p>苹果要求 iOS 上所有浏览器引擎必须使用 WebKit，本质是<strong>把引擎纳入系统统一管控</strong>：统一的安全更新节奏、统一的隐私框架（如 ITP 智能防跟踪）、统一的能耗/后台策略、统一的 App Store 审核边界。</p>
+<p><strong>对开发者的现实影响</strong>：即便 Chrome/Firefox 在 iOS 上也只是"换壳的 WebKit"，行为与桌面版 Chromium/Gecko <strong>并不等价</strong>。因此"一套 Chromium 打天下"在 iOS 不成立，必须在真机 WKWebView 中验证（见第 5.3、7.2 节）。</p>
+<h3>10.5 一句话理解各引擎的"性格"</h3>
+<ul>
+<li><strong>Chromium/Blink+V8</strong>：工程完备、生态最广，代价是内存与"跟随更新"的责任。</li>
+<li><strong>Gecko+SpiderMonkey</strong>：独立血脉、重视隐私与可修改性，是多样性的保险。</li>
+<li><strong>WebKit+JSC</strong>：与 Apple 软硬件深度协同，能耗表现突出，iOS 的唯一通路。</li>
+<li><strong>EdgeHTML / Trident</strong>：历史遗产，只服务于遗留系统迁移，不再进入新项目基线。</li>
 </ul>
 <hr>
 <h2>数据口径与局限</h2>
