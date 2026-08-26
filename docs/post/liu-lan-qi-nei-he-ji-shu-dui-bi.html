@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/203485678?v=4&size=64"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="# 浏览器内核技术对比选型
+
+> Chromium(Blink+V8) · Gecko(SpiderMonkey) · EdgeHTML · Trident/Chakra · WebKit(JSC)
+> 截至 **2026-08**｜面向架构选型与技术适配
+
+---
+
+## 0. TL;DR — 一张图看懂
+
+```
+1997 Trident(IE) ───────────────────────────────┐
+1998 Gecko ─────────────────────────────────────┤
+2001 WebKit(KHTML 衍生) ────────────────────────┤
+2008 Chromium(早期 WebKit+V8) ──────────────────┤
+2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
+2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
+2015 EdgeHTML(旧 Edge) ─────────────────────────┤
+2020 新 Edge → Chromium ────────────────────────┤
+2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
+```
+
+**核心结论**：可用于新产品的内核**只有三套**——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。">
+<meta property="og:title" content="浏览器内核技术对比">
+<meta property="og:description" content="# 浏览器内核技术对比选型
+
+> Chromium(Blink+V8) · Gecko(SpiderMonkey) · EdgeHTML · Trident/Chakra · WebKit(JSC)
+> 截至 **2026-08**｜面向架构选型与技术适配
+
+---
+
+## 0. TL;DR — 一张图看懂
+
+```
+1997 Trident(IE) ───────────────────────────────┐
+1998 Gecko ─────────────────────────────────────┤
+2001 WebKit(KHTML 衍生) ────────────────────────┤
+2008 Chromium(早期 WebKit+V8) ──────────────────┤
+2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
+2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
+2015 EdgeHTML(旧 Edge) ─────────────────────────┤
+2020 新 Edge → Chromium ────────────────────────┤
+2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
+```
+
+**核心结论**：可用于新产品的内核**只有三套**——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jia-sbg.github.io/post/liu-lan-qi-nei-he-ji-shu-dui-bi.html">
+<meta property="og:image" content="https://avatars.githubusercontent.com/u/203485678?v=4&size=64">
+<title>浏览器内核技术对比</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">浏览器内核技术对比</h1>
+<div class="title-right">
+    <a href="https://jia-sbg.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/jia-sbg/jia-sbg.github.io/issues/3" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><h1>浏览器内核技术对比选型</h1>
+<blockquote>
+<p>Chromium(Blink+V8) · Gecko(SpiderMonkey) · EdgeHTML · Trident/Chakra · WebKit(JSC)<br>
+截至 <strong>2026-08</strong>｜面向架构选型与技术适配</p>
+</blockquote>
+<hr>
+<h2>0. TL;DR — 一张图看懂</h2>
+<pre class="notranslate"><code class="notranslate">1997 Trident(IE) ───────────────────────────────┐
+1998 Gecko ─────────────────────────────────────┤
+2001 WebKit(KHTML 衍生) ────────────────────────┤
+2008 Chromium(早期 WebKit+V8) ──────────────────┤
+2013 ★ Blink 从 WebKit 分支，Chromium 独立 ─────┤
+2012→ Servo(Rust 探索) → Stylo/WebRender 回流 Gecko
+2015 EdgeHTML(旧 Edge) ─────────────────────────┤
+2020 新 Edge → Chromium ────────────────────────┤
+2021-03-09 EdgeHTML 终止 ───────────────────────┴──→ 2026：仅剩 3 套现役
+</code></pre>
+<p><strong>核心结论</strong>：可用于新产品的内核<strong>只有三套</strong>——Chromium、Gecko、WebKit；EdgeHTML 已死，Trident 仅存于 IE 模式（安全更新到 2029）。</p>
+<hr>
+<h2>1. 概念澄清（最容易踩坑）</h2>
+<p>这五个名字<strong>层级不同</strong>，不能直接并列：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>名称</th>
+<th>精确口径</th>
+<th>常见误称</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chromium</strong></td>
+<td>Blink + V8 + Network/GPU/沙箱/UI 的完整项目</td>
+<td>❌ "Chromium=Blink"</td>
+</tr>
+<tr>
+<td><strong>Blink</strong></td>
+<td>渲染引擎：DOM/CSS/布局/绘制/合成</td>
+<td>——</td>
+</tr>
+<tr>
+<td><strong>V8</strong></td>
+<td>JS/Wasm 引擎</td>
+<td>——</td>
+</tr>
+<tr>
+<td><strong>WebKit</strong></td>
+<td>WebCore + JavaScriptCore + 平台嵌入层</td>
+<td>❌ "WebKit=Safari"（iOS 第三方浏览器也被迫用它）</td>
+</tr>
+<tr>
+<td><strong>Gecko</strong></td>
+<td>渲染引擎（C++/Rust）</td>
+<td>❌ "Gecko=SpiderMonkey"（后者只是其 JS 引擎）</td>
+</tr>
+<tr>
+<td><strong>EdgeHTML</strong></td>
+<td>旧 Edge 引擎，<strong>已终止</strong></td>
+<td>❌ "EdgeHTML=Blink 前身"</td>
+</tr>
+<tr>
+<td><strong>Trident/MSHTML</strong></td>
+<td>IE 渲染引擎</td>
+<td>❌ 与 Chakra/JScript 混称</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>血缘关系</strong>：</p>
+<ul>
+<li><code class="notranslate">WebKit(2001, KHTML 衍生)</code> → Google 早期采用 → <strong>2013 分出 Blink</strong>；但 V8、GPU 栈、站点隔离<strong>并非</strong>来自 WebKit。</li>
+<li><code class="notranslate">Gecko</code> 独立起源；Servo 是 Mozilla 用 Rust 做的并行架构研究，<strong>成果（Stylo/WebRender）回流进 Gecko</strong>，并未替换它。</li>
+</ul>
+<p><strong>精确公式</strong>：</p>
+<pre class="notranslate"><code class="notranslate">Chromium  = Blink + V8 + 浏览器基础设施
+WebKit    = WebCore + JSC + 平台嵌入层
+Gecko     = layout/style 子系统 + SpiderMonkey
+</code></pre>
+<hr>
+<h2>2. 五大对象逐一拆解</h2>
+<h3>2.1 Chromium / Blink / V8</h3>
+<p><strong>优势 = 兼容面 + 进程隔离 + DevTools + WebView 生态的组合</strong>，而非单点渲染速度。</p>
+<ul>
+<li><strong>渲染管线</strong>：<code class="notranslate">HTML→DOM→样式→布局→Paint→Raster→GPU合成</code>，高度并行；现代 Chromium 把 Blink/V8 放进<strong>沙箱渲染进程</strong>，独立 GPU 进程、Browser 进程持高权限；<strong>站点隔离</strong>按 site 拆分渲染进程。</li>
+<li><strong>V8 分层 JIT</strong>：<code class="notranslate">Ignition → Sparkplug → Maglev → TurboFan</code>，冷启动与长时热代码收益不同。</li>
+<li><strong>代价</strong>：多进程 ⇒ 更高常驻内存、IPC、初始化开销；<strong>主线程长任务仍是瓶颈</strong>（同步 JS、强制回流、大批量 DOM）。</li>
+<li><strong>生态</strong>：Chrome/Edge/Opera/Vivaldi/Brave、Electron、WebView2、CEF、Android System WebView 共享其兼容面。</li>
+<li><strong><g-emoji class="g-emoji" alias="warning">⚠️</g-emoji> iOS 硬约束</strong>：第三方浏览器<strong>必须用 WebKit</strong>，"一套 Chromium 打天下"在 iOS 不成立。</li>
+</ul>
+<h3>2.2 Gecko（+Servo 回流）</h3>
+<p><strong>唯一长期独立于 Chromium/WebKit 的主流桌面引擎，价值在多样性、隐私、可修改性。</strong></p>
+<ul>
+<li>渲染路径：<code class="notranslate">HTML/DOM → frame tree → 位置计算 → 跨平台绘制</code>；旧 Layers 架构已移除，<strong>WebRender</strong> 走 GPU 化 display list（scene building → frame building → GPU 命令）。</li>
+<li><strong>结论</strong>："Gecko 一定 CPU 重"已过时，瓶颈转移到 display list/GPU 后端。</li>
+<li><strong>License</strong>：MPL 2.0（允许与专有代码组合，但对修改文件有义务）。</li>
+<li><strong>代价</strong>：Web 兼容差异、扩展生态、硬件集成需自建平台团队。</li>
+<li><strong>Servo/Ladybird</strong>：仅作技术跟踪，<strong>不可写入"已可用引擎矩阵"</strong>。</li>
+</ul>
+<h3>2.3 EdgeHTML</h3>
+<p><strong>被 Chromium 替换的旧 Edge 引擎，不是 Blink 的前身。</strong> 2015-07-28 发布，随 Legacy Edge/UWP WebView 使用；<strong>2021-03-09 支持终止</strong>。2026 年新项目<strong>不应列入支持矩阵</strong>，仅保留迁移盘点与回归测试价值。</p>
+<h3>2.4 Trident / MSHTML + Chakra/JScript</h3>
+<p><strong>IE 模式兼容引擎，不是现代 Web 基线。</strong> 适配成本极高：ES5 边界、旧 JScript、<code class="notranslate">attachEvent</code>、<code class="notranslate">currentStyle</code>、ActiveX、VBScript、条件注释、X-UA-Compatible、NTLM/Intranet 隐式依赖。</p>
+<p><strong>迁移顺序</strong>：① 去 ActiveX/插件硬依赖 → ② 业务逻辑迁标准 API → ③ WebView2 承载 → ④ 功能开关逐步关 IE 模式 → <strong>⑤ 设明确退出日期</strong>。</p>
+<h3>2.5 WebKit / JSC</h3>
+<p><strong>Apple 平台事实引擎，iOS WebView 不可绕过。</strong></p>
+<ul>
+<li><code class="notranslate">WebCore</code>(HTML/XML/CSS/SVG/MathML/Web API) + <code class="notranslate">JavaScriptCore</code>(ECMA-262)。</li>
+<li><strong>进程模型</strong>：WebKit1 单进程 / <strong>WebKit2 多进程</strong>(UI + WebContent + Networking)，承载 WKWebView。</li>
+<li><strong>JSC 分层 JIT</strong>：<code class="notranslate">LLInt → Baseline(≥6次调用) → DFG(≥60次) → FTL(数千次)</code>——这是<strong>触发阈值，非性能承诺</strong>。</li>
+<li><strong>强项</strong>：Metal/Core Animation/Power Management 深度协同 ⇒ Apple 平台能耗优势。</li>
+<li><strong>短板</strong>：非 Apple 平台的图形栈、媒体能力、后端成熟度<strong>不可等同 Safari</strong>，须按 <code class="notranslate">(WebEngine版本, OS, 设备)</code> 三元组实测。</li>
+</ul>
+<hr>
+<h2>3. 横向对比总表</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>引擎</th>
+<th>渲染层 / JS 引擎</th>
+<th>进程模型</th>
+<th>License</th>
+<th>2026 状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chromium</strong></td>
+<td>Blink / V8</td>
+<td>Browser+Renderer(沙箱)+GPU+Net；站点隔离</td>
+<td>BSD-style</td>
+<td>现役首选兼容面；承担内存/更新/供应链责任</td>
+</tr>
+<tr>
+<td><strong>Gecko</strong></td>
+<td>Gecko layout/style / SpiderMonkey(+Stylo/WebRender)</td>
+<td>内容+GPU+网络；OMTC 线程化</td>
+<td>MPL 2.0</td>
+<td>多样性/隐私/可修改性；需平台适配</td>
+</tr>
+<tr>
+<td><strong>WebKit</strong></td>
+<td>WebCore / JSC(LLInt→FTL)</td>
+<td>WK1 单进程 / WK2 多进程</td>
+<td>LGPL+BSD 混合</td>
+<td>Apple 平台事实引擎；iOS 不可绕过</td>
+</tr>
+<tr>
+<td><strong>EdgeHTML</strong></td>
+<td>EdgeHTML / Chakra</td>
+<td>旧 Edge 多进程</td>
+<td>专有</td>
+<td>2021-03-09 终止；仅迁移/回归</td>
+</tr>
+<tr>
+<td><strong>Trident</strong></td>
+<td>Trident / Chakra/JScript</td>
+<td>IE 旧模型</td>
+<td>专有</td>
+<td>仅 IE 模式；安全更新至 2029</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>三条比"谁最快"更可执行的结论</strong>：</p>
+<ol>
+<li>Chromium = <strong>能力覆盖 + 供应链责任</strong>的统一体。</li>
+<li>Gecko / WebKit = Chromium 外的<strong>两个独立实现锚点</strong>（独立验证标准、不同隐私/平台策略）。</li>
+<li>EdgeHTML / Trident <strong>不应再占新产品测试矩阵</strong>。</li>
+</ol>
+<hr>
+<h2>4. 性能、标准与功耗</h2>
+<h3>4.1 不存在脱离工作负载的永久排名</h3>
+<p>三引擎都能构建高性能浏览器，<strong>差异来自管线阶段 + 资源边界 + 工作负载</strong>。单跑分无法区分解析/样式/布局/JS/GPU/网络。</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>维度</th>
+<th>Chromium</th>
+<th>Gecko</th>
+<th>WebKit</th>
+<th>测量建议</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>加载/交互</td>
+<td>streaming parse、V8 流水线</td>
+<td>Stylo 并行样式、WebRender</td>
+<td>Apple 系统集成</td>
+<td>FCP/LCP/INP/TTFB + 网络瀑布</td>
+</tr>
+<tr>
+<td>JS/Wasm</td>
+<td>Sparkplug/Maglev/TurboFan</td>
+<td>SpiderMonkey 分层 JIT</td>
+<td>LLInt/Baseline/DFG/FTL</td>
+<td>Speedometer + JetStream + 真实 bundle</td>
+</tr>
+<tr>
+<td>布局/绘制</td>
+<td>主线程 + compositor/GPU</td>
+<td>display list + GPU</td>
+<td>WebCore + 平台 GPU</td>
+<td>devtools frame timeline</td>
+</tr>
+<tr>
+<td>内存</td>
+<td>多进程偏高</td>
+<td>取决于进程数/WebRender</td>
+<td>Apple 重能耗优化</td>
+<td>RSS、GPU mem、长驻留曲线</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h3>4.2 桌面份额 ≠ 内核能力排名</h3>
+<p>StatCounter 2026-07 桌面快照：Chrome <strong>70.58%</strong> + Edge <strong>11.15%</strong>（<strong>二者均 Chromium，绝不能相加称"Chromium份额"</strong>）+ Firefox 6.51% + Safari 5.66%。</p>
+<p>✅ 正确用法：<strong>定测试优先级</strong>。❌ 错误推导："份额高 ⇒ 所有负载最快 ⇒ 无需测 Gecko/WebKit"。</p>
+<h3>4.3 基准必须固定实验协议</h3>
+<p>Speedometer 3 测 <em>responsiveness</em>（几何均值）。正确流程：</p>
+<ol>
+<li>每版本 ≥5 轮；2. 异常轮记录原因（不静默删）；3. 用官方 CSV/JSON 汇总；4. 比几何均值+置信区间；5. <strong>≥2 类真实业务页交叉验证</strong>。</li>
+</ol>
+<h3>4.4 标准支持：按 <code class="notranslate">特性 × 版本 × flag × 宿主</code> 测量</h3>
+<p>CanIUse + MDN BCD <strong>不能替代</strong>目标 WebView/设备/OS/GPU 驱动/缩放/区域/flag 下的实测。选型"标准包"至少覆盖：CSS(Grid/Subgrid/Container Queries/<code class="notranslate">:has()</code>/Anchor)、ES(Top-level await/Temporal)、运行时(ESM/Worker)、图形(WebGL2/WebGPU/OffscreenCanvas)、网络(WebTransport)、存储(OPFS)、PWA、媒体、身份(WebAuthn)、嵌入式能力。<strong>PWA 可行性取决于完整宿主链，而非有无 manifest。</strong></p>
+<hr>
+<h2>5. 前端适配实战</h2>
+<h3>5.1 特性检测 &gt; UA 嗅探</h3>
+<div class="highlight highlight-source-js"><pre class="notranslate"><span class="pl-c">// ✅ 能力即真理</span>
+<span class="pl-k">if</span> <span class="pl-kos">(</span><span class="pl-s">'IntersectionObserver'</span> <span class="pl-k">in</span> <span class="pl-smi">window</span><span class="pl-kos">)</span> <span class="pl-kos">{</span> <span class="pl-c">/* 现代路径 */</span> <span class="pl-kos">}</span>
+<span class="pl-k">else</span> <span class="pl-kos">{</span> <span class="pl-c">/* 降级 */</span> <span class="pl-kos">}</span></pre></div>
+<p>配合 <code class="notranslate">CSS.supports()</code>、<code class="notranslate">matchMedia()</code>、<code class="notranslate">OffscreenCanvas</code>、<code class="notranslate">navigator.gpu</code>、SW 注册结果。<strong>UA 嗅探</strong>仅用于识别 Electron/WebView2/iOS-WKWebView 版本等<strong>受控环境</strong>，且须先检测能力、再 UA 佐证、保留兜底。</p>
+<h3>5.2 厂商前缀进入维护期</h3>
+<p>现代标准特性无需堆叠前缀；旧代码可清理：</p>
+<div class="highlight highlight-source-css"><pre class="notranslate"><span class="pl-c">/* 旧：*/</span> -webkit-<span class="pl-c1">/</span><span class="pl-c1">-</span>moz<span class="pl-c1">-</span><span class="pl-c1">/</span><span class="pl-c1">-</span>ms<span class="pl-c1">-</span><span class="pl-c1">/</span><span class="pl-c1">-</span>o<span class="pl-c1">-</span>transition
+<span class="pl-c">/* 新：*/</span> transition</pre></div>
+<p>清理顺序：<strong>① 确认目标范围 → ② CanIUse+MDN → ③ 视觉回归 → ④ 保留必要兼容</strong>。勿机械删除仍被旧 WebView 使用的私有前缀。</p>
+<h3>5.3 各引擎主要适配风险</h3>
+<ul>
+<li><strong>Chromium</strong>：版本碎片化、Electron/WebView2 锁定、面向 Chrome 过度开发。固定 target major，跟踪 security advisories；Electron 须建模 <code class="notranslate">sandbox/nodeIntegration/contextIsolation</code>。</li>
+<li><strong>Gecko</strong>：长尾页面假设了 Blink 细节。重点测滚动/合成/字体/<code class="notranslate">@layer</code>/<code class="notranslate">:has()</code>/Container Queries/WebRTC/DRM；CI 固定 latest + latest ESR。</li>
+<li><strong>WebKit</strong>：iOS WebView 与 Safari 耦合。须测 <code class="notranslate">viewport-fit</code>、安全区、弹性滚动、全屏、autoplay、权限、Cookie/Storage、SW、后台生命周期、应用内导航——<strong>真机外壳验证，勿靠桌面 Safari 推断</strong>。</li>
+<li><strong>Trident/EdgeHTML</strong>：旧 API 持续扩散，通过重写 + feature flag + 受控 IE 模式逐步退出。</li>
+</ul>
+<h3>5.4 统一渲染层架构</h3>
+<pre class="notranslate"><code class="notranslate">标准 Web UI → 能力适配器 → 原生桥适配器 → 平台宿主
+</code></pre>
+<p>遗留引擎<strong>仅</strong>进"能力适配器"受控分支；新功能默认不为旧引擎降级架构。宿主桥统一为<strong>异步消息契约</strong>，禁依赖 <code class="notranslate">window.chrome/.webkit/.MSStream</code> 随意组合。</p>
+<hr>
+<h2>6. 安全、扩展、License 与嵌入</h2>
+<h3>6.1 沙箱 = 组合机制，而非"有没有"标签</h3>
+<p>三套现役均多进程，但验收须覆盖：站点隔离、跨域存储、权限策略、沙箱逃逸史、GPU 命令边界、扩展 API、下载区、WebAuthn、混合内容、<strong>更新频率</strong>。</p>
+<ul>
+<li><strong>iOS</strong>：第三方 WebView 必用 WebKit，更新更依赖系统。</li>
+<li><strong>Android</strong>：系统 WebView（OEM/Google 分发）<strong>或</strong> 自带 Chromium（更新/CVE/体积责任转给 App 方）。</li>
+</ul>
+<h3>6.2 扩展权限半径</h3>
+<p>默认走 <strong>WebExtensions</strong> 标准 API，最小化 <code class="notranslate">host_permissions</code>、远程代码、<code class="notranslate">eval</code>。Electron 勿把"能跑 Node"当安全特性——默认 <code class="notranslate">contextIsolation</code> + <code class="notranslate">sandbox</code>，敏感调用放主进程。</p>
+<h3>6.3 开源 ≠ 无合规成本</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>场景</th>
+<th>首选</th>
+<th>关键合规动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Android WebView</td>
+<td>系统 WebView / CEF / Electron 自带</td>
+<td>版本矩阵、自动更新、系统依赖</td>
+</tr>
+<tr>
+<td>iOS App</td>
+<td><strong>WKWebView</strong>（必选）</td>
+<td>ITP、后台策略、与 Safari 差异</td>
+</tr>
+<tr>
+<td>桌面套壳</td>
+<td>Electron/CEF/WebView2</td>
+<td>更新机制、体积、CVE SLA、品牌/专利</td>
+</tr>
+<tr>
+<td>嵌入式/Linux/车载</td>
+<td>CEF/Chromium 或 <strong>WPE/WebKit</strong></td>
+<td>GPU/EGL、DRM、codec、内存、启动、LTS</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>闭源产品也必须</strong>：① 生成 SBOM；② 保存上游 commit hash；③ 记录修改补丁；④ 保留 NOTICE/LICENSE；⑤ 明确动/静态链接；⑥ 应用内开源许可页；⑦ 建立安全升级 SLA。</p>
+<hr>
+<h2>7. 选型决策树与最小测试矩阵</h2>
+<h3>7.1 决策树（先问约束，再问引擎）</h3>
+<pre class="notranslate"><code class="notranslate">Q1 iOS 分发要求？ ──是──▶ WKWebView/WebKit（不可绕过），其余平台也建 WebKit 测试
+ │否
+Q2 有 Trident/ActiveX 或 EdgeHTML UWP 死依赖？ ──是──▶ 企业迁移路径（设退出日）
+ │否 → 二者移出新矩阵
+Q3 强系统集成/低功耗/Apple 体验？ ──是──▶ 优先 WebKit
+Q4 快速覆盖大量 Web/扩展/媒体/WebGPU/Windows？ ──是──▶ Chromium（担内存+更新成本）
+Q5 强隐私/独立标准参考/需改引擎？ ──是──▶ Gecko 正式候选（嵌入式再加比 WPE/CEF）
+ │
+ ▼ 必经：真实 WebView + 真实设备 + 真实业务页验证 —— 否则不锁定选型
+</code></pre>
+<h3>7.2 最小测试矩阵</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>层级</th>
+<th>必测组合</th>
+<th>目的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>桌面 Chromium</td>
+<td>最新 Chrome + 最新 Edge</td>
+<td>兼容面 + Chromium 内部差异</td>
+</tr>
+<tr>
+<td>桌面独立实现</td>
+<td>最新 Firefox + 1 个 ESR</td>
+<td>Gecko 差异 + LTS 边界</td>
+</tr>
+<tr>
+<td>Apple 桌面</td>
+<td>macOS Safari + Safari TP</td>
+<td>WebKit + 前瞻 API</td>
+</tr>
+<tr>
+<td>移动 WebView</td>
+<td>iOS WKWebView + Android WebView 最低版</td>
+<td><strong>测 WebView，非桌面浏览器</strong></td>
+</tr>
+<tr>
+<td>嵌入式</td>
+<td>目标 SoC + OS + WebEngine commit</td>
+<td>GPU/内存/输入/codec/启动</td>
+</tr>
+<tr>
+<td>遗留企业</td>
+<td>Chromium Edge + IE 模式</td>
+<td><strong>仅</strong>验证受控旧资产</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<hr>
+<h2>8. 扩展内容：实用诊断速查（★新增）</h2>
+<h3>8.1 查 WebView / 引擎版本（调试必备）</h3>
+<div class="highlight highlight-source-shell"><pre class="notranslate"><span class="pl-c"><span class="pl-c">#</span> Android：查系统 WebView 包名与版本</span>
+adb shell dumpsys package com.google.android.webview <span class="pl-k">|</span> grep versionName
+adb shell am start -a android.intent.action.VIEW -d <span class="pl-s"><span class="pl-pds">"</span>https://www.whatismybrowser.com<span class="pl-pds">"</span></span>
+
+<span class="pl-c"><span class="pl-c">#</span> macOS：查 Safari / WebKit 版本</span>
+sw_vers<span class="pl-k">;</span> defaults <span class="pl-c1">read</span> /Applications/Safari.app/Contents/Info.plist CFBundleVersion
+
+<span class="pl-c"><span class="pl-c">#</span> iOS 真机：通过 WKWebView 的 userAgent / navigator.userAgentData 读取</span></pre></div>
+<h3>8.2 渲染性能定位套路</h3>
+<pre class="notranslate"><code class="notranslate">devtools Performance 录制
+  → 找 Long Task (&gt;50ms)
+  → 看 Layout/Paint/Composite 占比
+  → Rendering 面板开 "Paint flashing" / "Layout Shift Regions"
+  → Memory 面板拍堆快照，比对 detached DOM
+Chromium: chrome://gpu  # 看 GPU 后端与硬件加速状态
+Gecko:   about:logging   # 布局/网络/存储诊断
+</code></pre>
+<h3>8.3 快速术语表（★新增）</h3>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>术语</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Site Isolation</td>
+<td>按 site 拆分渲染进程，防跨站数据泄露</td>
+</tr>
+<tr>
+<td>Oilpan / PartitionAlloc</td>
+<td>Blink 的 GC + 分配器</td>
+</tr>
+<tr>
+<td>OMTC</td>
+<td>Off-Main-Thread Compositing（Gecko 线程化合成）</td>
+</tr>
+<tr>
+<td>Stylo</td>
+<td>Servo 并行样式系统，已并入 Gecko</td>
+</tr>
+<tr>
+<td>WebRender</td>
+<td>GPU 化 display-list 渲染路径</td>
+</tr>
+<tr>
+<td>WKWebView vs UIWebView</td>
+<td>前者多进程(WebKit2)、现行；后者已废弃</td>
+</tr>
+<tr>
+<td>Evergreen vs Fixed Version</td>
+<td>WebView2 的"随系统更新" vs "锁定版本"分发模式</td>
+</tr>
+<tr>
+<td>WPT</td>
+<td>Web Platform Tests，跨引擎一致性测试基准</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<hr>
+<h2>9. 趋势与结论</h2>
+<h3>确定性结论</h3>
+<ul>
+<li><strong>Chromium = 最低公共兼容面</strong>；<strong>Gecko / WebKit = 必要独立实现锚点</strong>。适配应围绕标准化 ES/CSS/Web API + 真实 WebView 版本 + 可复现测试，而非面向抽象引擎写分支。</li>
+<li><strong>性能选型 = 选工作负载</strong>，不是选"最快"。Speedometer(responsiveness) ≠ JetStream(JS/Wasm) ≠ 加载/内存/功耗实验。</li>
+<li><strong>嵌入式/移动的决定因素是平台约束，不是桌面份额。</strong> iOS 必 WebKit；Android 可选系统 WebView 或自带 Chromium；车载/Linux 比的是 BSP/GPU/内存/codec/LTS/License。</li>
+</ul>
+<h3>值得跟踪的新方向（审慎采用）</h3>
+<ul>
+<li><strong>Servo / Ladybird</strong>：证明 Rust + 并行 + GPU 合成路线可行，但量产选型前须验 <strong>安全响应 / WPT / 媒体DRM / GPU后端 / WebDriver / 嵌入式ABI / LTS</strong>。</li>
+<li><strong>AI × 隐私</strong>：竞争焦点从"渲染速度"转向"代理能力 / 端侧模型 / 数据边界"。WebNN/WebGPU、AI Agent、权限提示、存储分区、跟踪防护、身份凭证都在放大<strong>引擎↔OS 耦合</strong>。架构上视 AI 能力为 <code class="notranslate">模型运行时 + 权限模型 + 页面能力</code> 的组合问题。</li>
+</ul>
+<hr>
+<h2>数据口径与局限</h2>
+<ul>
+<li>本报告截至 <strong>2026-08</strong>；EdgeHTML 终止(2021-03-09)、Trident IE 模式安全更新(至 2029)均为生命周期事实，不代表仍适合现代开发。</li>
+<li>桌面份额来自 StatCounter（网站访问量推断），<strong>非装机量、非引擎用量</strong>；Chrome+Edge 同为 Chromium 宿主，<strong>不可相加</strong>。</li>
+<li>性能图为固定协议示例，非厂商横评。CSS/JS 支持度、移动份额、嵌入式覆盖率<strong>不整理为精确百分比</strong>——引擎版本/OS/GPU驱动/flag/OEM/商店政策都会造成显著偏差；更可靠的做法是按目标版本维护<strong>动态兼容矩阵 + 自动化测试 + 持续依赖升级</strong>。</li>
+</ul>
+<h2>引用来源</h2>
+<p>[1] Microsoft Lifecycle — Edge Legacy（支持止于 2021-03-09）<br>
+[2] MDN — Glossary: Trident<br>
+[3] docs.webkit.org — Introduction / JavaScriptCore<br>
+[4] wiki.mozilla.org — Gecko:Overview / Quantum<br>
+[5] gs.statcounter.com — Desktop Browser Market Share (Jul 2026)<br>
+[6] browserbench.org — Speedometer 3<br>
+[7] chromium.googlesource.com — Design docs (Multi-process, Site Isolation, GPU)<br>
+[8] mozilla.org/MPL/2.0 — License<br>
+[9] webkit.org — Licensing WebKit<br>
+[10] MDN — Vendor Prefix / Microsoft Edge</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://jia-sbg.github.io">NS-Blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行 "+diffDay+" 天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.disabled=true;
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","jia-sbg/jia-sbg.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+
+
+</html>
