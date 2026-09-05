@@ -1,5 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>NS-Blog</title><link>https://jia-sbg.github.io</link><description>GoYi-1的个人博客</description><copyright>NS-Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/203485678?v=4&amp;size=64</url><title>avatar</title><link>https://jia-sbg.github.io</link></image><lastBuildDate>Wed, 26 Aug 2026 02:22:10 +0000</lastBuildDate><managingEditor>NS-Blog</managingEditor><ttl>60</ttl><webMaster>NS-Blog</webMaster><item><title>浏览器内核技术对比</title><link>https://jia-sbg.github.io/post/liu-lan-qi-nei-he-ji-shu-dui-bi.html</link><description># 浏览器内核技术对比选型
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>NS-Blog</title><link>https://jia-sbg.github.io</link><description>GoYi-1的个人博客</description><copyright>NS-Blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://avatars.githubusercontent.com/u/203485678?v=4&amp;size=64</url><title>avatar</title><link>https://jia-sbg.github.io</link></image><lastBuildDate>Sat, 05 Sep 2026 23:56:52 +0000</lastBuildDate><managingEditor>NS-Blog</managingEditor><ttl>60</ttl><webMaster>NS-Blog</webMaster><item><title>那个被承诺的未来--FrutigerAero</title><link>https://jia-sbg.github.io/post/na-ge-bei-cheng-nuo-de-wei-lai---FrutigerAero.html</link><description># 那个曾经理直气壮相信未来的界面：聊聊 Frutiger Aero
+
+你还记得 Windows Vista 那张极光壁纸吗？
+
+深蓝的天幕上铺开一片青绿色的光带，像有人把北极的夜空装进了显示器。</description><guid isPermaLink="true">https://jia-sbg.github.io/post/na-ge-bei-cheng-nuo-de-wei-lai---FrutigerAero.html</guid><pubDate>Sat, 05 Sep 2026 23:56:26 +0000</pubDate></item><item><title>浏览器内核技术对比</title><link>https://jia-sbg.github.io/post/liu-lan-qi-nei-he-ji-shu-dui-bi.html</link><description># 浏览器内核技术对比选型
 
 &gt; Chromium(Blink+V8) · Gecko(SpiderMonkey) · EdgeHTML · Trident/Chakra · WebKit(JSC)
 &gt; 截至 **2026-08**｜面向架构选型与技术适配
